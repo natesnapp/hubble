@@ -2,7 +2,7 @@ import sys
 import os
 myPath = os.path.abspath(os.getcwd())
 sys.path.insert(0, myPath)
-import hubblestack.extmods.modules.pulsar as pulsar
+import trubblestack.extmods.modules.pulsar as pulsar
 from salt.exceptions import CommandExecutionError
 
 import shutil
@@ -75,7 +75,7 @@ class TestPulsar():
         assert (len(val['data']['blacklist'])) == 2
 
     def test_process(self):
-        configfile = 'tests/unittests/resources/hubblestack_pulsar_config.yaml'
+        configfile = 'tests/unittests/resources/trubblestack_pulsar_config.yaml'
         verbose = False
 
         def config_get(value, default):
@@ -102,9 +102,9 @@ class TestPulsar():
         __salt__['match.compound'] = match_compound
         pulsar.__salt__ = __salt__
         get_top_data_config = pulsar.get_top_data(topfile)
-        configs = ['salt://hubblestack_pulsar/' + config.replace('.', '/') + '.yaml'
+        configs = ['salt://trubblestack_pulsar/' + config.replace('.', '/') + '.yaml'
                    for config in get_top_data_config]
-        assert configs[0] == 'salt://hubblestack_pulsar/hubblestack_pulsar_config.yaml'
+        assert configs[0] == 'salt://trubblestack_pulsar/trubblestack_pulsar_config.yaml'
 
     def test_get_top_data(self):
         topfile = 'tests/unittests/resources/top.pulsar'
@@ -121,7 +121,7 @@ class TestPulsar():
         result = pulsar.get_top_data(topfile)
         pulsar.__salt__ = {}
         assert isinstance(result, list)
-        assert result[0] == 'hubblestack_pulsar_config'
+        assert result[0] == 'trubblestack_pulsar_config'
 
     def test_get_top_data_for_CommandExecutionError(self):
         topfile = '/testfile'

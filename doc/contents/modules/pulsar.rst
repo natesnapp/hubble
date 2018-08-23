@@ -1,5 +1,5 @@
 Pulsar (Linux) (``pulsar.py``)
 ==============================
 
-.. automodule:: hubblestack.extmods.modules.pulsar
+.. automodule:: trubblestack.extmods.modules.pulsar
     :members: process, top

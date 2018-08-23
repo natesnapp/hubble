@@ -1,13 +1,13 @@
-# Hubble Unittests
+# Trubble Unittests
 
 ## Running unit tests
 
-Follow the steps to run unit tests for Hubble
+Follow the steps to run unit tests for Trubble
 ```
 yum install git wget vim python python-setuptools -y
 easy_install pip
-git clone https://github.com/hubblestack/hubble.git
-cd hubble
+git clone https://github.com/trubblestack/trubble.git
+cd trubble
 pip install -r test-requirements.txt
 py.test (this will run all the test files in /tests/unittests/)
 py.test tests/unittests/test_pulsar.py (this will run the test file mentioned)

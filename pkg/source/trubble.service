@@ -1,0 +1,10 @@
+[Unit]
+Description=Trubblestack
+
+[Service]
+Type=forking
+PIDFile=/var/run/trubble.pid
+ExecStart=/usr/bin/trubble -d
+
+[Install]
+WantedBy=multi-user.target

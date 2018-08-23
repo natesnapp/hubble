@@ -18,7 +18,7 @@ it. It simply runs quietly in the background and sends you alerts.
 
 .. note::
 
-    Running pulsar outside of hubble's scheduler will never return results.
+    Running pulsar outside of trubble's scheduler will never return results.
     This is because the first time you run pulsar it will set up the watches in
     inotify, but no events will have been generated. Only subsequent runs under
     the same process can receive events.
@@ -27,7 +27,7 @@ Configuration
 -------------
 
 The list of files and directories that pulsar watches is defined in
-salt://hubblestack_pulsar/hubblestack_pulsar_config.yaml::
+salt://trubblestack_pulsar/trubblestack_pulsar_config.yaml::
 
     /lib: { recurse: True, auto_add: True }
     /bin: { recurse: True, auto_add: True }
@@ -46,7 +46,7 @@ salt://hubblestack_pulsar/hubblestack_pulsar_config.yaml::
     /usr/local/libexec: { recurse: True, auto_add: True }
     /opt/bin: { recurse: True, auto_add: True }
     /opt/osquery: { recurse: True, auto_add: True }
-    /opt/hubble: { recurse: True, auto_add: True }
+    /opt/trubble: { recurse: True, auto_add: True }
     /etc:
       exclude:
         - /etc/passwd.lock
@@ -96,13 +96,13 @@ them via a ``top.pulsar`` file (similar to topfiles in SaltStack)::
 
     pulsar:
       '*':
-        - hubblestack_pulsar_config
+        - trubblestack_pulsar_config
 
 Each entry under ``pulsar`` is a SaltStack style `compound match`_ that
 describes which hosts should receive the list of queries. All queries are
 merged, and conflicts go to the last-defined file.
 
-The files referenced are relative to ``salt://hubblestack_pulsar/`` and
+The files referenced are relative to ``salt://trubblestack_pulsar/`` and
 leave off the ``.yaml`` extension.
 
 You can also specify an alternate ``top.pulsar`` file.

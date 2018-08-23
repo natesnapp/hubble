@@ -1,7 +1,7 @@
-# This Dockerfile aims to make building Hubble v2 packages easier.
+# This Dockerfile aims to make building Trubble v2 packages easier.
 # To build an image: 1. copy pkg/scripts/pyinstaller-requirements.txt to directory with this Dockerfile
 #                    2. docker build -t <image_name> .
-# The resulting image is ready to run the pyinstaller on container start and drop hubble<version>-coreos.tar.gz
+# The resulting image is ready to run the pyinstaller on container start and drop trubble<version>-coreos.tar.gz
 # in the /data directory. Mount /data volume into a directory on the host to access the package.
 # To run the container:  docker run -it --rm -v `pwd`:/data <image_name>
 
@@ -9,8 +9,8 @@ FROM centos:7
 
 RUN yum makecache fast && yum -y update
 
-#paths that hubble or hubble parts need in the package
-RUN mkdir -p /etc/osquery /var/log/osquery /etc/hubble/hubble.d /opt/hubble /opt/osquery /var/osquery
+#paths that trubble or trubble parts need in the package
+RUN mkdir -p /etc/osquery /var/log/osquery /etc/trubble/trubble.d /opt/trubble /opt/osquery /var/osquery
 
 #osquery build start
 #osquery should be built first since requirements for other packages can interfere with osquery dependencies
@@ -58,14 +58,14 @@ RUN yum -y install  \
 ENV LIBCURL_SRC_URL=https://github.com/curl/curl.git
 ENV LIBCURL_SRC_VERSION=curl-7_61_0
 ENV LIBCURL_TEMP=/tmp/libcurl
-ENV PATH=/opt/hubble/bin/:/opt/hubble/include:/opt/hubble/lib:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/opt/trubble/bin/:/opt/trubble/include:/opt/trubble/lib:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p "$LIBCURL_TEMP" \
  && cd "$LIBCURL_TEMP" \
  && git clone "$LIBCURL_SRC_URL" \
  && cd curl \
  && git checkout "$LIBCURL_SRC_VERSION" \
  && ./buildconf \
- && ./configure --prefix=/opt/hubble --disable-ldap --without-nss --disable-manual --disable-gopher --disable-smtp --disable-smb --disable-imap --disable-pop3 --disable-tftp --disable-telnet --disable-dict --disable-ldaps --disable-ldap --disable-rtsp --with-libssh2 \
+ && ./configure --prefix=/opt/trubble --disable-ldap --without-nss --disable-manual --disable-gopher --disable-smtp --disable-smb --disable-imap --disable-pop3 --disable-tftp --disable-telnet --disable-dict --disable-ldaps --disable-ldap --disable-rtsp --with-libssh2 \
  && make \
  && make install
 
@@ -81,16 +81,16 @@ RUN mkdir -p "$GITTEMP" \
  && cd git \
  && git checkout "$GIT_SRC_VERSION" \
  && make configure \
- && ./configure --prefix=/opt/hubble --with-tcltk=no --with-expat=no --with-python=no  --with-curl=/opt/hubble \
+ && ./configure --prefix=/opt/trubble --with-tcltk=no --with-expat=no --with-python=no  --with-curl=/opt/trubble \
  && echo "NO_TCLTK=YesPlease" >> config.mak.autogen \
  && echo "NO_PERL=YesPlease" >> config.mak.autogen \
  && sed -i '0,/^NO_GETTEXT/s/^NO_GETTEXT.*/NO_GETTEXT=YesPlease/' config.mak.autogen \
  && make \
  && make install
 
-#clean up of /opt/hubble
-RUN rm /opt/hubble/bin/curl* \
- && rm -rf /opt/hubble/include /opt/hubble/share
+#clean up of /opt/trubble
+RUN rm /opt/trubble/bin/curl* \
+ && rm -rf /opt/trubble/include /opt/trubble/share
 
 #libgit2 install start
 #must precede pyinstaller requirements
@@ -123,60 +123,60 @@ RUN yum install -y ruby ruby-devel rpmbuild rpm-build rubygems gcc make \
 
 #pyinstaller start
 #commands specified for ENTRYPOINT and CMD are executed when the container is run, not when the image is built
-#use the following variables to choose the version of hubble
+#use the following variables to choose the version of trubble
 ENV HUBBLE_CHECKOUT=v2.4.1
 ENV HUBBLE_VERSION=2.4.1
 ENV HUBBLE_ITERATION=1
-ENV HUBBLE_GIT_URL=https://github.com/hubblestack/hubble.git
-ENV HUBBLE_SRC_PATH=/hubble_src
+ENV HUBBLE_GIT_URL=https://github.com/trubblestack/trubble.git
+ENV HUBBLE_SRC_PATH=/trubble_src
 ENV _HOOK_DIR="./pkg/"
 ENV _BINARY_LOG_LEVEL="INFO"
 ENV _INCLUDE_PATH=""
-ENV LD_LIBRARY_PATH=/opt/hubble/lib:/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
+ENV LD_LIBRARY_PATH=/opt/trubble/lib:/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
 RUN git clone "$HUBBLE_GIT_URL" "$HUBBLE_SRC_PATH" \
  && cd "$HUBBLE_SRC_PATH" \
  && git checkout "$HUBBLE_CHECKOUT" \
- && cp -rf "$HUBBLE_SRC_PATH" /hubble_build
+ && cp -rf "$HUBBLE_SRC_PATH" /trubble_build
 RUN mkdir /data
 VOLUME /data
-WORKDIR /hubble_build
+WORKDIR /trubble_build
 ENTRYPOINT [ "/bin/bash", "-o", "xtrace", "-c" ]
-CMD [ "pyinstaller --onedir --noconfirm --log-level ${_BINARY_LOG_LEVEL} --additional-hooks-dir=${_HOOK_DIR} --runtime-hook=pkg/pyinstaller-runtimehooks/pathopthubble.py hubble.py \
-    && cp /hubble_build/conf/osquery.conf /etc/osquery/ \
-    && cp /hubble_build/conf/osquery.flags /etc/osquery/ \
-# hubble default configuration file
-    && cp -rf /hubble_build/conf/hubble /etc/hubble/ \
-    && cp -rf /hubble_build/conf/hubble-profile.sh /etc/profile.d/ \
-    && cp -pr /hubble_build/dist/hubble /opt/hubble/hubble-libs \
-    && ln -s /opt/hubble/hubble-libs/hubble /opt/hubble/hubble \
+CMD [ "pyinstaller --onedir --noconfirm --log-level ${_BINARY_LOG_LEVEL} --additional-hooks-dir=${_HOOK_DIR} --runtime-hook=pkg/pyinstaller-runtimehooks/pathopttrubble.py trubble.py \
+    && cp /trubble_build/conf/osquery.conf /etc/osquery/ \
+    && cp /trubble_build/conf/osquery.flags /etc/osquery/ \
+# trubble default configuration file
+    && cp -rf /trubble_build/conf/trubble /etc/trubble/ \
+    && cp -rf /trubble_build/conf/trubble-profile.sh /etc/profile.d/ \
+    && cp -pr /trubble_build/dist/trubble /opt/trubble/trubble-libs \
+    && ln -s /opt/trubble/trubble-libs/trubble /opt/trubble/trubble \
     # make sure rpm shared libs are taken out to avoid mismatch between rpm database and shared libs that pyinstaller includes
-    && rm -rf /opt/hubble/hubble-libs/librpm* \
+    && rm -rf /opt/trubble/trubble-libs/librpm* \
 #rpm pkg start
-    && tar -cPvzf /data/hubblestack-${HUBBLE_VERSION}.tar.gz /etc/hubble /etc/osquery /opt/hubble /opt/osquery /var/log/osquery /etc/profile.d/hubble-profile.sh \
-    && mkdir -p /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION} \
-    && tar -xzvf /data/hubblestack-${HUBBLE_VERSION}.tar.gz -C /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION} \
-    && mkdir -p /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/usr/lib/systemd/system \
-    && cp /hubble_build/pkg/hubble.service /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/usr/lib/systemd/system/ \
-    && cp -f /hubble_build/conf/hubble /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/etc/hubble/ \
+    && tar -cPvzf /data/trubblestack-${HUBBLE_VERSION}.tar.gz /etc/trubble /etc/osquery /opt/trubble /opt/osquery /var/log/osquery /etc/profile.d/trubble-profile.sh \
+    && mkdir -p /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION} \
+    && tar -xzvf /data/trubblestack-${HUBBLE_VERSION}.tar.gz -C /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION} \
+    && mkdir -p /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION}/usr/lib/systemd/system \
+    && cp /trubble_build/pkg/trubble.service /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION}/usr/lib/systemd/system/ \
+    && cp -f /trubble_build/conf/trubble /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION}/etc/trubble/ \
 #during container run, if a configuration file exists in a /data copy it over the existing one so it would be
 #possile to optionally include a custom one with the package
-    && if [ -f /data/hubble ] ; then cp /data/hubble /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/etc/hubble/ ; fi \
+    && if [ -f /data/trubble ] ; then cp /data/trubble /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION}/etc/trubble/ ; fi \
 #also bring in anything from a /data/opt/ directory so we can bundle other executables if needed
-    && if [ -d /data/opt ] ; then cp -r /data/opt/* /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/opt/ ; fi \
-    && cd /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION} \
+    && if [ -d /data/opt ] ; then cp -r /data/opt/* /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION}/opt/ ; fi \
+    && cd /trubble_build/debbuild/trubblestack-${HUBBLE_VERSION} \
     && mkdir -p usr/bin \
-#symlink to have hubble binary in path
-    && ln -s /opt/hubble/hubble usr/bin/hubble \
+#symlink to have trubble binary in path
+    && ln -s /opt/trubble/trubble usr/bin/trubble \
 #fpm start
     && fpm -s dir -t rpm \
-       -n hubblestack \
+       -n trubblestack \
        -v ${HUBBLE_VERSION} \
        --iteration ${HUBBLE_ITERATION} \
        --config-files /etc/osquery/osquery.conf \
-       --after-install /hubble_build/conf/afterinstall-systemd.sh \
-       --after-upgrade /hubble_build/conf/afterupgrade-systemd.sh \
-       etc/hubble etc/osquery opt usr \
+       --after-install /trubble_build/conf/afterinstall-systemd.sh \
+       --after-upgrade /trubble_build/conf/afterupgrade-systemd.sh \
+       etc/trubble etc/osquery opt usr \
 #edit to change iteration number, if necessary
-    && cp hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.x86_64.rpm /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm \
-    && openssl dgst -sha256 /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm \
-                          > /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm.sha256" ]
+    && cp trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.x86_64.rpm /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm \
+    && openssl dgst -sha256 /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm \
+                          > /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}.el7.x86_64.rpm.sha256" ]

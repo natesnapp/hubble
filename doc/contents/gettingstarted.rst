@@ -1,4 +1,4 @@
-Getting Started with HubbleStack
+Getting Started with TrubbleStack
 ================================
 
 Installation
@@ -10,15 +10,15 @@ Installation Using Released Packages (Recommended)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Various pre-built packages targeting several popular operating systems can be
-found under `Releases <https://github.com/hubblestack/hubble/releases>`_.
+found under `Releases <https://github.com/trubblestack/trubble/releases>`_.
 
 Alternative Installations and Packaging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Building Hubble packages through Dockerfile
+Building Trubble packages through Dockerfile
 """""""""""""""""""""""""""""""""""""""""""
 
-Dockerfile aims to build the Hubble v2 packages easier. Dockerfiles for the
+Dockerfile aims to build the Trubble v2 packages easier. Dockerfiles for the
 distribution you want to build can be found at the path ``/pkg``. For example,
 dockerfile for centos6 distribution is at the path ``/pkg/centos6/``
 
@@ -37,8 +37,8 @@ Installing using setup.py
 ::
 
     sudo yum install git python-setuptools -y
-    git clone https://github.com/hubblestack/hubble
-    cd hubble
+    git clone https://github.com/trubblestack/trubble
+    cd trubble
     sudo python setup.py install
 
 If there are errors installing, it may mean that your setuptools is out of
@@ -47,25 +47,25 @@ date. Try this::
     easy_install pip
     pip install -U setuptools
 
-``setup.py`` installs a hubble "binary" into ``/usr/bin/``.
+``setup.py`` installs a trubble "binary" into ``/usr/bin/``.
 
-A config template has been placed in ``/etc/hubble/hubble``. Modify it to your
-specifications and needs. You can do ``hubble -h`` to see the available runtime
+A config template has been placed in ``/etc/trubble/trubble``. Modify it to your
+specifications and needs. You can do ``trubble -h`` to see the available runtime
 options.
 
 The first two commands you should run to make sure things are set up correctly
-are ``hubble --version`` and ``hubble test.ping``.
+are ``trubble --version`` and ``trubble test.ping``.
 
 
 Basic Usage
 -----------
 
-Hubble runs as a standalone agent on each server you wish to monitor. To get
-started, install Hubble using one of the above installation options. Once
-Hubble is installed, check that everything is working correctly:
+Trubble runs as a standalone agent on each server you wish to monitor. To get
+started, install Trubble using one of the above installation options. Once
+Trubble is installed, check that everything is working correctly:
 
-#. Run ``hubble test.ping``. This should return true.
-#. Run ``hubble hubble.audit``. You should see the results of the default audit
+#. Run ``trubble test.ping``. This should return true.
+#. Run ``trubble trubble.audit``. You should see the results of the default audit
    profiles run against the box
 
 Quickstart via Docker container

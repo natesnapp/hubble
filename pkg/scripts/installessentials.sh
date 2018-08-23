@@ -15,4 +15,4 @@ fi
 easy_install pip
 
 # Creating required directories
-mkdir -p /etc/osquery /var/log/osquery /etc/hubble /opt/hubble /opt/osquery /var/osquery
+mkdir -p /etc/osquery /var/log/osquery /etc/trubble /opt/trubble /opt/osquery /var/osquery

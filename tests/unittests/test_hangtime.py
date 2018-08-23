@@ -1,5 +1,5 @@
 
-from hubblestack.hangtime import HangTime, hangtime_wrapper
+from trubblestack.hangtime import HangTime, hangtime_wrapper
 import time
 import signal
 import pytest
@@ -98,7 +98,7 @@ def test_wrapper():
 
 
 # Salt ends up catching the HangTime exceptions during the grains refreshes.  Any
-# attempt to catch them with try/except with wrappers in hubblestack.daemon will
+# attempt to catch them with try/except with wrappers in trubblestack.daemon will
 # fail.  This presents two problems:
 #
 # 1. The grains will appear to die due to a HangTime and will be missing after

@@ -7,38 +7,38 @@ if not distro:
     distro, version, _ = platform.linux_distribution(supported_dists=['system'])
 
 # Default to cent7
-data_files = [('/usr/lib/systemd/system', ['pkg/source/hubble.service']),
-              ('/etc/hubble', ['conf/hubble']), ]
+data_files = [('/usr/lib/systemd/system', ['pkg/source/trubble.service']),
+              ('/etc/trubble', ['conf/trubble']), ]
 
 if distro == 'redhat' or distro == 'centos':
     if version.startswith('6'):
-        data_files = [('/etc/init.d', ['pkg/hubble']),
-                      ('/etc/hubble', ['conf/hubble']), ]
+        data_files = [('/etc/init.d', ['pkg/trubble']),
+                      ('/etc/trubble', ['conf/trubble']), ]
     elif version.startswith('7'):
-        data_files = [('/usr/lib/systemd/system', ['pkg/source/hubble.service']),
-                      ('/etc/hubble', ['conf/hubble']), ]
+        data_files = [('/usr/lib/systemd/system', ['pkg/source/trubble.service']),
+                      ('/etc/trubble', ['conf/trubble']), ]
 elif distro == 'Amazon Linux AMI':
-    data_files = [('/etc/init.d', ['pkg/hubble']),
-                  ('/etc/hubble', ['conf/hubble']), ]
+    data_files = [('/etc/init.d', ['pkg/trubble']),
+                  ('/etc/trubble', ['conf/trubble']), ]
 
-with open('hubblestack/__init__.py', 'r') as fd:
+with open('trubblestack/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
 setup(
-    name='hubblestack',
+    name='trubblestack',
     version=version,
     description='Modular, open-source security compliance framework',
     author='Colton Myers',
     author_email='colton.myers@gmail.com',
     maintainer='Colton Myers',
     maintainer_email='colton.myers@gmail.com',
-    url='https://hubblestack.io',
+    url='https://trubblestack.io',
     license='Apache 2.0',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'hubble = hubblestack.daemon:run',
+            'trubble = trubblestack.daemon:run',
         ],
     },
     install_requires=[

@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#
+# Trubble Startup Script
+#
+# PROVIDE: trubble
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+# Add the following to /etc/rc.conf[.local] to enable this service
+#
+# trubble_enable (bool):       Set to NO by default.
+#               Set it to YES to enable trubble
+# trubble_paths (string):      Set to "/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin" by default.
+#               Default $PATH for trubble
+# trubble_eggcache (string):   Set to "/tmp" by default.
+#               Allows defining egg cache directory to fix runtime on diskless systems.
+#
+
+. /etc/rc.subr
+
+name=trubble
+rcvar=trubble_enable
+
+load_rc_config ${name}
+
+: ${trubble_enable:=NO}
+: ${trubble_paths=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin}
+: ${trubble_pidfile:=/var/run/trubble.pid}
+: ${trubble_eggcache=/tmp}
+
+command="/usr/local/bin/trubble"
+command_interpreter="/usr/local/bin/python2.7"
+required_files="/usr/local/etc/trubble/trubble"
+command_args="-c ${required_files} -d"
+pidfile=${trubble_pidfile}
+
+export PATH="${trubble_paths}"
+export PYTHON_EGG_CACHE="${trubble_eggcache}"
+
+run_rc_command "$1"

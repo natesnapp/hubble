@@ -22,21 +22,21 @@ then
   sudo yum install python27 -y
   cd scripts/
   sudo scl enable python27 'bash installessentials.sh'
-  sudo scl enable python27 "bash pyinstaller-hubble.sh pkg_clean $1"
+  sudo scl enable python27 "bash pyinstaller-trubble.sh pkg_clean $1"
   sudo scl enable python27 'bash libgit2-build.sh'
   bash osquery-build.sh
   sudo scl enable python27 'bash pip-install.sh'
-  sudo scl enable python27 'bash pyinstaller-hubble.sh pkg_init'
-  sudo scl enable python27 'bash pyinstaller-hubble.sh pkg_create'
+  sudo scl enable python27 'bash pyinstaller-trubble.sh pkg_init'
+  sudo scl enable python27 'bash pyinstaller-trubble.sh pkg_create'
   exit
 fi
 
 # Normal install for python 2.7
 cd scripts/
 sudo bash installessentials.sh
-sudo bash pyinstaller-hubble.sh pkg_clean $1
+sudo bash pyinstaller-trubble.sh pkg_clean $1
 sudo bash libgit2-build.sh
 bash osquery-build.sh
 sudo bash pip-install.sh
-sudo bash pyinstaller-hubble.sh pkg_init
-sudo bash pyinstaller-hubble.sh pkg_create
+sudo bash pyinstaller-trubble.sh pkg_init
+sudo bash pyinstaller-trubble.sh pkg_create

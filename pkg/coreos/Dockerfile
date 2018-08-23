@@ -1,7 +1,7 @@
-# This Dockerfile aims to make building Hubble v2 packages easier.
+# This Dockerfile aims to make building Trubble v2 packages easier.
 # To build an image: 1. copy pkg/scripts/pyinstaller-requirements.txt to directory with this Dockerfile
 #                    2. docker build -t <image_name> .
-# The resulting image is ready to run the pyinstaller on container start and drop hubble<version>-coreos.tar.gz
+# The resulting image is ready to run the pyinstaller on container start and drop trubble<version>-coreos.tar.gz
 # in the /data directory. Mount /data volume into a directory on the host to access the package.
 # To run the container:  docker run -it --rm -v `pwd`:/data <image_name>
 
@@ -10,8 +10,8 @@ FROM debian:9
 RUN apt-get update     \
  && apt-get -y upgrade
 
-#paths that hubble or hubble parts need in the package
-RUN mkdir -p /etc/osquery /var/log/osquery /etc/hubble/hubble.d /opt/hubble /opt/osquery /var/osquery
+#paths that trubble or trubble parts need in the package
+RUN mkdir -p /etc/osquery /var/log/osquery /etc/trubble/trubble.d /opt/trubble /opt/osquery /var/osquery
 
 #patchelf build start
 #must precede osquery as at the moment, osquery won't build without patchelf
@@ -76,14 +76,14 @@ RUN apt-get -y install  \
 ENV LIBCURL_SRC_URL=https://github.com/curl/curl.git
 ENV LIBCURL_SRC_VERSION=curl-7_61_0
 ENV LIBCURL_TEMP=/tmp/libcurl
-ENV PATH=/opt/hubble/bin/:/opt/hubble/include:/opt/hubble/lib:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/opt/trubble/bin/:/opt/trubble/include:/opt/trubble/lib:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p "$LIBCURL_TEMP" \
  && cd "$LIBCURL_TEMP" \
  && git clone "$LIBCURL_SRC_URL" \
  && cd curl \
  && git checkout "$LIBCURL_SRC_VERSION" \
  && ./buildconf \
- && ./configure --prefix=/opt/hubble --disable-ldap --without-nss --disable-manual --disable-gopher --disable-smtp --disable-smb --disable-imap --disable-pop3 --disable-tftp --disable-telnet --disable-dict --disable-ldaps --disable-ldap --disable-rtsp --with-libssh2 \
+ && ./configure --prefix=/opt/trubble --disable-ldap --without-nss --disable-manual --disable-gopher --disable-smtp --disable-smb --disable-imap --disable-pop3 --disable-tftp --disable-telnet --disable-dict --disable-ldaps --disable-ldap --disable-rtsp --with-libssh2 \
  && make \
  && make install
 
@@ -99,16 +99,16 @@ RUN mkdir -p "$GITTEMP" \
  && cd git \
  && git checkout "$GIT_SRC_VERSION" \
  && make configure \
- && ./configure --prefix=/opt/hubble --with-tcltk=no --with-expat=no --with-python=no  --with-curl=/opt/hubble \
+ && ./configure --prefix=/opt/trubble --with-tcltk=no --with-expat=no --with-python=no  --with-curl=/opt/trubble \
  && echo "NO_TCLTK=YesPlease" >> config.mak.autogen \
  && echo "NO_PERL=YesPlease" >> config.mak.autogen \
  && sed -i '0,/^NO_GETTEXT/s/^NO_GETTEXT.*/NO_GETTEXT=YesPlease/' config.mak.autogen \
  && make \
  && make install
 
-#clean up of /opt/hubble
-RUN rm /opt/hubble/bin/curl* \
- && rm -rf /opt/hubble/include /opt/hubble/share
+#clean up of /opt/trubble
+RUN rm /opt/trubble/bin/curl* \
+ && rm -rf /opt/trubble/include /opt/trubble/share
 
 #libgit2 install start
 #must precede pyinstaller requirements
@@ -135,39 +135,39 @@ RUN pip -v install -r pyinstaller-requirements.txt
 
 #pyinstaller start
 #commands specified for ENTRYPOINT and CMD are executed when the container is run, not when the image is built
-#use the following variables to choose the version of hubble
+#use the following variables to choose the version of trubble
 ENV HUBBLE_CHECKOUT=v2.4.1
-ENV HUBBLE_GIT_URL=https://github.com/hubblestack/hubble.git
+ENV HUBBLE_GIT_URL=https://github.com/trubblestack/trubble.git
 ENV HUBBLE_VERSION=2.4.1
 ENV HUBBLE_ITERATION=1
-ENV HUBBLE_SRC_PATH=/hubble_src
+ENV HUBBLE_SRC_PATH=/trubble_src
 ENV _HOOK_DIR="./pkg/"
 ENV _BINARY_LOG_LEVEL="INFO"
 ENV _INCLUDE_PATH=""
 RUN git clone ${HUBBLE_GIT_URL} "$HUBBLE_SRC_PATH" \
  && cd "$HUBBLE_SRC_PATH" \
  && git checkout ${HUBBLE_CHECKOUT} \
- && cp -rf "$HUBBLE_SRC_PATH" /hubble_build
+ && cp -rf "$HUBBLE_SRC_PATH" /trubble_build
 RUN mkdir /data
 VOLUME /data
-WORKDIR /hubble_build
+WORKDIR /trubble_build
 ENTRYPOINT [ "/bin/bash", "-o", "xtrace", "-c" ]
-CMD [ "pyinstaller --onedir --noconfirm --log-level ${_BINARY_LOG_LEVEL} --additional-hooks-dir=${_HOOK_DIR} --runtime-hook=pkg/pyinstaller-runtimehooks/pathopthubble.py hubble.py \
-    && cp /hubble_build/conf/osquery.conf /etc/osquery/ \
-    && cp /hubble_build/conf/osquery.flags /etc/osquery/ \
-# hubble default configuration file
-    && cp -rf /hubble_build/conf/hubble /etc/hubble/ \
+CMD [ "pyinstaller --onedir --noconfirm --log-level ${_BINARY_LOG_LEVEL} --additional-hooks-dir=${_HOOK_DIR} --runtime-hook=pkg/pyinstaller-runtimehooks/pathopttrubble.py trubble.py \
+    && cp /trubble_build/conf/osquery.conf /etc/osquery/ \
+    && cp /trubble_build/conf/osquery.flags /etc/osquery/ \
+# trubble default configuration file
+    && cp -rf /trubble_build/conf/trubble /etc/trubble/ \
 #during container run, if a configuration file exists in a /data copy it over the existing one so it would be
 #possile to optionally include a custom one with the package
-    && if [ -f /data/hubble ] ; then cp /data/hubble /etc/hubble/ ; fi \
+    && if [ -f /data/trubble ] ; then cp /data/trubble /etc/trubble/ ; fi \
 #also bring in anything from a /data/opt/ directory so we can bundle other executables if needed
     && if [ -d /data/opt ] ; then cp -r /data/opt/* /opt/ ; fi \
-    && cp -rf /hubble_build/conf/hubble-profile.sh /etc/profile.d/ \
-    && cp -pr /hubble_build/dist/hubble /opt/hubble/hubble-libs \
-    && ln -s /opt/hubble/hubble-libs/hubble /opt/hubble/hubble \
+    && cp -rf /trubble_build/conf/trubble-profile.sh /etc/profile.d/ \
+    && cp -pr /trubble_build/dist/trubble /opt/trubble/trubble-libs \
+    && ln -s /opt/trubble/trubble-libs/trubble /opt/trubble/trubble \
     # make sure rpm shared libs are taken out to avoid mismatch between rpm database and shared libs that pyinstaller includes
-    && rm -rf /opt/hubble/hubble-libs/librpm* \
+    && rm -rf /opt/trubble/trubble-libs/librpm* \
     # hack to get libssh2 since pyinstaller 3.2 does not do it
-    && cp /usr/lib/x86_64-linux-gnu/libssh2.so.1 /opt/hubble/hubble-libs \
-    && tar -cPvzf /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz /etc/hubble /etc/osquery /opt/hubble /opt/osquery /var/log/osquery /etc/profile.d/hubble-profile.sh \
-    && openssl dgst -sha256 /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz > /data/hubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz.sha256" ]
+    && cp /usr/lib/x86_64-linux-gnu/libssh2.so.1 /opt/trubble/trubble-libs \
+    && tar -cPvzf /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz /etc/trubble /etc/osquery /opt/trubble /opt/osquery /var/log/osquery /etc/profile.d/trubble-profile.sh \
+    && openssl dgst -sha256 /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz > /data/trubblestack-${HUBBLE_VERSION}-${HUBBLE_ITERATION}-coreos.tar.gz.sha256" ]

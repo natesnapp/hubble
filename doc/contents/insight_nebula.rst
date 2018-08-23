@@ -1,8 +1,8 @@
 Insights and Data Gathering (Nebula)
 ====================================
 
-Hubble can gather incredible amounts of raw data from your hosts for later
-analysis. The codename for the insights piece of hubble is Nebula. It primarily
+Trubble can gather incredible amounts of raw data from your hosts for later
+analysis. The codename for the insights piece of trubble is Nebula. It primarily
 uses `osquery <https://osquery.io>`_ which allows you to query your system as
 if it were a database.
 
@@ -16,7 +16,7 @@ Usage
 
 Nebula queries are formatted into query groups which allow you to schedule
 sets of queries to run at different cadences. The names of these groups are
-arbitrary, but the queries provided in `hubblestack_data`_ are grouped by
+arbitrary, but the queries provided in `trubblestack_data`_ are grouped by
 timing::
 
     fifteen_min:
@@ -44,8 +44,8 @@ aggregation location such as splunk or logstash for further processing.
 However, if you would like to run the queries manually you can call the :doc:`nebula
 execution module <modules/nebula_osquery>`::
 
-    hubble nebula.queries day
-    hubble nebula.queries hour verbose=True
+    trubble nebula.queries day
+    trubble nebula.queries hour verbose=True
 
 topfiles
 --------
@@ -55,7 +55,7 @@ them via a ``top.nebula`` file (similar to topfiles in SaltStack)::
 
     nebula:
       - '*':
-          - hubblestack_nebula_queries
+          - trubblestack_nebula_queries
       - 'G@splunk_index:some_team':
           - some_team
 
@@ -63,12 +63,12 @@ Each entry under ``nebula`` is a SaltStack style `compound match`_ that
 describes which hosts should receive the list of queries. All queries are
 merged, and conflicts go to the last-defined file.
 
-The files referenced are relative to ``salt://hubblestack_nebula_v2/`` and
+The files referenced are relative to ``salt://trubblestack_nebula_v2/`` and
 leave off the ``.yaml`` extension.
 
 You can also specify an alternate ``top.nebula`` file.
 
 For more details, see the module documentation: :doc:`modules/nebula_osquery`
 
-.. _hubblestack_data: https://github.com/hubblestack/hubblestack_data/blob/develop/hubblestack_nebula_v2/hubblestack_nebula_queries.yaml
+.. _trubblestack_data: https://github.com/trubblestack/trubblestack_data/blob/develop/trubblestack_nebula_v2/trubblestack_nebula_queries.yaml
 .. _compound match: https://docs.saltstack.com/en/latest/topics/targeting/compound.html

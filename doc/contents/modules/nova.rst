@@ -1,5 +1,5 @@
-Nova (``hubble.py``)
+Nova (``trubble.py``)
 ====================
 
-.. automodule:: hubblestack.extmods.modules.hubble
+.. automodule:: trubblestack.extmods.modules.trubble
     :members: audit, top

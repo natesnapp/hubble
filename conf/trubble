@@ -1,0 +1,133 @@
+#################################
+## GitFS Config
+#################################
+##
+## Trubble doesn't ship with profiles. To get the default profiles, you can
+## subscribe via GitFS to the trubblestack_data repo. You must also have either
+## python-gitpython or python-pygit2 installed. (python-pygit2 is recommended
+## if available
+
+gitfs_remotes:
+  - https://github.com/trubblestack/trubblestack_data.git
+## To use locally stored trubblestack_data, comment out gitfs_remote section,
+## then uncomment the following. It's also possible to use both.
+# file_roots:
+#   base:
+#     - /srv/salt/trubblestack_data
+## In the above example, trubblestack_data is cloned into /srv/salt/.
+## If multiple backends are used those listed first take precedence.
+fileserver_backend:
+  - roots
+  - git
+
+## If the ip_gw grains is defined and False, meaning there is no default
+## gateway defined, fall back to these fileserver backends. This will allow
+## for easy fallback from, for example, azure blob storage to git repos in
+## the data center
+#fallback_fileserver_backend:
+#  - roots
+#  - git
+
+#################################
+## Scheduler Config
+#################################
+##
+## Trubble has a basic scheduler which can be used to schedule jobs at various
+## intervals (defined by the `seconds` argument), with optional splay.
+##
+## Below is a sample schedule for all of the modules includedin trubble
+
+#schedule:
+#  audit_daily:
+#    function: trubble.audit
+#    seconds: 86400
+#    splay: 3600
+#    kwargs:
+#      verbose: True
+#    returner: splunk_nova_return
+#    returner_retry: True # only works on splunk returners for now
+#    run_on_start: False
+#  nebula_fifteen_min:
+#    function: nebula.queries
+#    seconds: 900
+#    splay: 300
+#    args:
+#      - fifteen_min
+#    returner: splunk_nebula_return
+#    run_on_start: False
+#  nebula_hour:
+#    function: nebula.queries
+#    seconds: 3600
+#    splay: 900
+#    args:
+#      - hour
+#    returner: splunk_nebula_return
+#    run_on_start: False
+#  nebula_day:
+#    function: nebula.queries
+#    seconds: 86400
+#    splay: 3600
+#    args:
+#      - day
+#    returner: splunk_nebula_return
+#    returner_retry: True # only works on splunk returners for now
+#    run_on_start: False
+#  pulsar:
+#    function: pulsar.process
+#    seconds: 1
+#    returner: splunk_pulsar_return
+#    run_on_start: True
+#  pulsar_canary:
+#    function: pulsar.canary
+#    seconds: 86400
+#    run_on_start: True
+#  conf_publisher:
+#    function: conf_publisher.publish
+#    seconds: 86400
+#    splay: 3600
+#    run_on_start: False
+
+#################################
+## Returner Config
+#################################
+##
+## In order for the sample scheduler config to work, you must configure the
+## returners which are being used. In the case of the Splunk returners, you
+## must add index, token, and endpoint information
+
+#trubblestack:
+#  returner:
+#    splunk:
+#      - token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+#        indexer: splunk-indexer.domain.tld
+#        index: trubble
+#        add_query_to_sourcetype: True  # Separate nebula sourcetype per query
+#        sourcetype_nova: trubble_audit
+#        sourcetype_nebula: trubble_osquery
+#        sourcetype_pulsar: trubble_fim
+#        sourcetype_log: trubble_log
+#splunklogging: True
+#splunk_index_extracted_fields: []
+
+#config_to_grains:
+#  - splunkindex: "trubblestack:returner:splunk:0:index"
+
+## If you are instead using the slack returner, you'll need a block similar to
+## this:
+
+#slack_pulsar:
+#  as_user: true
+#  username: calculon
+#  channel: channel
+#  api_key: xoxb-xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+
+########################################################
+## For fetching local salt custom grains and pillar data
+########################################################
+
+#custom_grains_pillar:
+#  grains:
+#    - selinux: selinux:enabled
+#    - release: osrelease
+#  pillar:
+#    - ntpserver: network_services:ntpserver

@@ -1,1 +1,1 @@
-service hubble restart
+service trubble restart

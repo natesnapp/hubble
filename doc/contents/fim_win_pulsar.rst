@@ -19,7 +19,7 @@ it. It simply runs quietly in the background and sends you alerts.
 
 .. note::
 
-    Running pulsar outside of hubble's scheduler will never return results.
+    Running pulsar outside of trubble's scheduler will never return results.
     This is because the first time you run pulsar it will set up the watches in
     inotify, but no events will have been generated. Only subsequent runs under
     the same process can receive events.

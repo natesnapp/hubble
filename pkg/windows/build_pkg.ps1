@@ -1,10 +1,10 @@
-# Script to build the Hubble .msi pkg
+# Script to build the Trubble .msi pkg
 Param (
     [bool]$default=$false,
     [string]$confFile=$null,
     [string]$version=$null
 )
-if (!((test-path "C:\Temp\hubble") -and (test-path "C:\Temp\salt"))) {
+if (!((test-path "C:\Temp\trubble") -and (test-path "C:\Temp\salt"))) {
     write-error "The create_build_env.ps1 script has not been run. Please run the create_build_env.ps1 script and try again."
     break 
 }
@@ -14,7 +14,7 @@ cd C:\temp
 #This is a temporary fix until we can find out why it doesn't build on other OS's
 $OS = (Get-WmiObject -class Win32_OperatingSystem -Property Version).Version
 if ($os -notlike "6.3*" ) {
-    write-error "Hubble for Windows can currently on be built on Windows Server 2012R2. Please run this script 2012R2."
+    write-error "Trubble for Windows can currently on be built on Windows Server 2012R2. Please run this script 2012R2."
 }
 
 $hooks = ".\pkg\"
@@ -37,38 +37,38 @@ If (!(Test-Path "$nsis\NSIS.exe")) {
 # Add NSIS to the Path
 $env:Path += ";$nsis"
 
-# Check for existing hubble pyinstall dir and removing
-if (Test-Path '.\hubble\dist') {
-    Remove-Item '.\hubble\dist' -Recurse -Force
+# Check for existing trubble pyinstall dir and removing
+if (Test-Path '.\trubble\dist') {
+    Remove-Item '.\trubble\dist' -Recurse -Force
 }
-if (Test-Path '.\hubble\build') {
-    Remove-Item '.\hubble\build' -Recurse -Force
+if (Test-Path '.\trubble\build') {
+    Remove-Item '.\trubble\build' -Recurse -Force
 }
 
 
 # Create pyinstaller spec
-pushd hubble
-pyi-makespec --additional-hooks-dir=$hooks .\hubble.py
+pushd trubble
+pyi-makespec --additional-hooks-dir=$hooks .\trubble.py
 
 # Edit the spec file and add libeay32.dll, C:\Python27\libeay32.dll, and BINARY
-$specFile = Get-Content .\hubble.spec
+$specFile = Get-Content .\trubble.spec
 $modified = $specFile -match 'BINARY'
 if (!($modified)) {
     $specFile = $specFile -replace "a.binaries","a.binaries + [('libeay32.dll', 'C:\Python27\libeay32.dll', 'BINARY')]"
-    $specFile | Set-Content .\hubble.spec -Force
+    $specFile | Set-Content .\trubble.spec -Force
 }
 
 # Run pyinstaller
-pyinstaller .\hubble.spec
+pyinstaller .\trubble.spec
 
 # Checks to see if a conf file has been supplied. 
-#If not, it prompts the user for a file path then Copies the hubble.conf to correct location
+#If not, it prompts the user for a file path then Copies the trubble.conf to correct location
 Start-Sleep -Seconds 5
-if (!(Test-Path '.\dist\hubble\etc\hubble')) {
-    New-Item '.\dist\hubble\etc\hubble' -ItemType Directory
+if (!(Test-Path '.\dist\trubble\etc\trubble')) {
+    New-Item '.\dist\trubble\etc\trubble' -ItemType Directory
 }
 if($default) {
-    $confFile = 'C:\temp\hubble\pkg\windows\hubble.conf'
+    $confFile = 'C:\temp\trubble\pkg\windows\trubble.conf'
 }
 if($confFile) {
     while(!(test-path $confFile)) {
@@ -83,14 +83,14 @@ else {
         $confFile = read-host
     }
 }
-Copy-Item $confFile -Destination '.\dist\hubble\etc\hubble\'
+Copy-Item $confFile -Destination '.\dist\trubble\etc\trubble\'
 
 # Copy PortableGit to correct location
-Move-Item '.\PortableGit' -Destination '.\dist\hubble\' -Force
+Move-Item '.\PortableGit' -Destination '.\dist\trubble\' -Force
 
 # Copy nssm.exe to correct location
 if (Test-Path '..\salt\pkg\windows\buildenv\nssm.exe') {
-    Copy-Item '..\salt\pkg\windows\buildenv\nssm.exe' -Destination '.\dist\hubble\'
+    Copy-Item '..\salt\pkg\windows\buildenv\nssm.exe' -Destination '.\dist\trubble\'
 }
 else {
     $choco_nssm = choco list --localonly | Where-Object {$_ -like "nssm*"} 
@@ -101,14 +101,14 @@ else {
         choco upgrade NSSM
     }
     $nssmPath = "C:\ProgramData\chocolatey\lib\NSSM\tools\nssm.exe"
-    Copy-Item $nssmPath -Destination '.\dist\hubble'
+    Copy-Item $nssmPath -Destination '.\dist\trubble'
 }
 
 # Check for intalled osquery
 if (!(Test-Path 'C:\ProgramData\osquery\osqueryi.exe')) {
 	choco install osquery
 }
-Copy-Item C:\ProgramData\osquery\osqueryi.exe .\dist\hubble\
+Copy-Item C:\ProgramData\osquery\osqueryi.exe .\dist\trubble\
 
 # Add needed variables
 $currDIR = $PWD.Path
@@ -129,12 +129,12 @@ if ($version -eq $null) {
 		$version = read-host "What would you like to name this build?"
 }
 
-makensis.exe /DHubbleVersion=$version "$instDIR\hubble-Setup.nsi"
+makensis.exe /DTrubbleVersion=$version "$instDIR\trubble-Setup.nsi"
 
-Move-Item .\pkg\windows\Hubble*.exe C:\temp\
+Move-Item .\pkg\windows\Trubble*.exe C:\temp\
 
 
 Write-Host "`n`n***************************"
 Write-Host "*********Finished**********"
 Write-Host "***************************"
-Write-Host "`nThe Hubble installer is located in C:\temp`n`n" -ForegroundColor Yellow
+Write-Host "`nThe Trubble installer is located in C:\temp`n`n" -ForegroundColor Yellow

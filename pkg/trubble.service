@@ -1,0 +1,12 @@
+[Unit]
+Description=Trubblestack
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/trubble.pid
+ExecStart=/opt/trubble/trubble -d
+
+[Install]
+WantedBy=multi-user.target

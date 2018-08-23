@@ -1,4 +1,4 @@
-﻿# Script to install hubble dependencies and create executible
+﻿# Script to install trubble dependencies and create executible
 
 #Declaring Paramaters
 Param(
@@ -69,13 +69,13 @@ python -m pip install --upgrade pip
 pip install -e .
 Pop-Location
 
-# Install hubble and dependency
-if (Test-Path .\hubble) {
-    Remove-Item -Recurse -Force hubble
+# Install trubble and dependency
+if (Test-Path .\trubble) {
+    Remove-Item -Recurse -Force trubble
 }
 #Checks to see if any paramaters were given for both $repo and $branch.
 if ($default) {
-    $repo = "https://github.com/hubblestack/hubble"
+    $repo = "https://github.com/trubblestack/trubble"
     $branch = "master"
 }
 #If no default was specified and no paramaters were given in the script, it prompts for a repo and branch
@@ -86,7 +86,7 @@ if ($repo -notlike "https*") {
     }
 }
 git clone $repo
-Push-Location hubble\pkg\windows
+Push-Location trubble\pkg\windows
 if ($branch) {
     git checkout $branch
 } else {
@@ -101,7 +101,7 @@ foreach ($line in $lines) {
 }
 Pop-Location
 
-# Download PortableGit.  Requirement for Hubble
+# Download PortableGit.  Requirement for Trubble
 $port_git = choco list --localonly | Where-Object {$_ -like "git.portable *"}
 if (!($port_git)) {
     choco install git.portable -y
@@ -111,7 +111,7 @@ if (!($port_git)) {
         choco upgrade git.portable -y
     }
 }
-#Moves Portable Git into the correct location to work with hubble. 
+#Moves Portable Git into the correct location to work with trubble. 
 set-location C:\Temp
 Import-Module "$env:ChocolateyInstall\helpers\chocolateyInstaller.psm1" -Force;
 $ChocoTools = Get-ToolsLocation
@@ -120,11 +120,11 @@ if (!($ChocoTools)) {
     $ChocoTools = $env:ChocolateyToolsLocation
 }
 
-if(!(test-path .\hubble\PortableGit\)) {
-    mkdir C:\Temp\hubble\PortableGit\
+if(!(test-path .\trubble\PortableGit\)) {
+    mkdir C:\Temp\trubble\PortableGit\
 }
 
-Copy-Item -Path $ChocoTools\git\* -Destination C:\Temp\hubble\PortableGit\ 
+Copy-Item -Path $ChocoTools\git\* -Destination C:\Temp\trubble\PortableGit\ 
 
 # Install osquery for executible
 if (!(Test-path C:\ProgramData\osquery)) {

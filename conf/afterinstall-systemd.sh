@@ -1,2 +1,2 @@
 systemctl daemon-reload
-service hubble start
+service trubble start
